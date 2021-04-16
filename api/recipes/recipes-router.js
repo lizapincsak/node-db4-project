@@ -1,23 +1,20 @@
 const Recipe = require("./recipes-model.js");
-const { getRecipeById } = require("./recipes-middleware")
 const router = require("express").Router();
 
-router.get("/", (req, res, next) => {
-    Recipe.getRecipe()
-        .then(recipes => {
-            res.json(recipes)
+router.get("/:recipe_id", (req, res, next) => {
+    Recipe.getRecipeById(req.params.recipe_id)
+        .then(resource => {
+            res.status.json(resource)
         })
         .catch(next)
 })
 
-router.get("/:id", getRecipeById, (req, res, next) => {
-    const { recipes_id } = req.params
-    Recipe.getRecipeById(recipes_id)
-        .then(recipe => {
-            res.json(recipe)
-        })
-        .catch(next)
-})
-
+router.use((err, req, res, next) => { // eslint-disable-line
+    res.status(err.status || 500).json({
+      sageAdvice: 'Finding the real error is 90% of the bug fix',
+      message: err.message,
+      stack: err.stack,
+    })
+  })
 
 module.exports = router;
